@@ -1,0 +1,298 @@
+openapi: 3.0.3
+info:
+  title: yt-dlp Web UI API
+  description: API for downloading YouTube videos using yt-dlp
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api
+    description: Development server
+
+paths:
+  /download:
+    post:
+      summary: Start a download
+      description: Initiates a download job for a YouTube video
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+                - format
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: YouTube video URL
+                  example: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                format:
+                  type: string
+                  enum: [video, audio_mp3, audio_wav, metadata]
+                  description: Download format
+                include_subtitles:
+                  type: boolean
+                  default: false
+                  description: Whether to download subtitles
+                advanced_options:
+                  type: object
+                  properties:
+                    cookies:
+                      type: string
+                      description: Cookies file path
+                    proxy:
+                      type: string
+                      description: Proxy URL
+                    output_template:
+                      type: string
+                      description: Output filename template
+      responses:
+        '202':
+          description: Download job created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                    format: uuid
+                    description: Unique job identifier
+                  status:
+                    type: string
+                    enum: [pending, processing]
+                    description: Current job status
+                  message:
+                    type: string
+                    description: Status message
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        loc:
+                          type: array
+                          items:
+                            type: string
+                        msg:
+                          type: string
+                        type:
+                          type: string
+
+  /status/{job_id}:
+    get:
+      summary: Get download status
+      description: Returns the current status and progress of a download job
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Job identifier
+      responses:
+        '200':
+          description: Job status retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum: [pending, processing, completed, failed]
+                  progress:
+                    type: number
+                    minimum: 0
+                    maximum: 100
+                    description: Download progress percentage
+                  file_path:
+                    type: string
+                    description: Path to downloaded file (if completed)
+                  file_size:
+                    type: number
+                    description: File size in bytes (if completed)
+                  error_message:
+                    type: string
+                    description: Error message (if failed)
+                  started_at:
+                    type: string
+                    format: date-time
+                  completed_at:
+                    type: string
+                    format: date-time
+                  expires_at:
+                    type: string
+                    format: date-time
+        '404':
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+
+  /download/{job_id}:
+    get:
+      summary: Download completed file
+      description: Downloads the completed file for a finished job
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Job identifier
+      responses:
+        '200':
+          description: File download
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              description: Filename for download
+        '404':
+          description: Job not found or file not available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+        '410':
+          description: File expired and deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+
+  /metadata:
+    post:
+      summary: Get video metadata
+      description: Extracts metadata from a YouTube video without downloading
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: YouTube video URL
+                  example: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      responses:
+        '200':
+          description: Metadata extracted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                  title:
+                    type: string
+                  duration:
+                    type: number
+                    description: Duration in seconds
+                  thumbnail_url:
+                    type: string
+                    format: uri
+                  description:
+                    type: string
+                  uploader:
+                    type: string
+                  view_count:
+                    type: number
+                  upload_date:
+                    type: string
+                    format: date
+                  available_formats:
+                    type: array
+                    items:
+                      type: string
+                  available_subtitles:
+                    type: array
+                    items:
+                      type: string
+                  extracted_at:
+                    type: string
+                    format: date-time
+        '400':
+          description: Invalid URL or extraction failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+
+  /progress/{job_id}:
+    get:
+      summary: Stream download progress
+      description: Server-sent events stream for real-time progress updates
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Job identifier
+      responses:
+        '200':
+          description: Progress stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+              example: |
+                data: {"job_id": "123e4567-e89b-12d3-a456-426614174000", "status": "processing", "progress": 45}
+                
+                data: {"job_id": "123e4567-e89b-12d3-a456-426614174000", "status": "completed", "progress": 100}
+        '404':
+          description: Job not found
+
