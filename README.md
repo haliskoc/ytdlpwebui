@@ -8,6 +8,13 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-red.svg)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
 
+## 📸 Screenshot
+
+<div align="center">
+  <img src="frontend/public/screenshot.png" alt="yt-dlp Web UI Screenshot" width="600" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+  <p><em>Clean and modern web interface for downloading YouTube videos</em></p>
+</div>
+
 ## ✨ Features
 
 ### 🚀 **One-Click Setup**
@@ -57,6 +64,8 @@ chmod +x setup.sh
 ```
 
 **That's it!** 🎉 Your browser will open automatically and you'll see the app at `http://localhost:3000`.
+
+> **💡 Tip**: The interface will look exactly like the screenshot above - clean, modern, and easy to use!
 
 ### 🐳 Run with Docker
 
