@@ -58,6 +58,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+.pnpm-debug.log*
 
 # Coverage directory used by tools like istanbul
 coverage/
@@ -156,3 +157,44 @@ downloads/
 
 # Local development
 .local
+
+# Personal information and sensitive data
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+credentials/
+config.local.*
+
+# IDE and editor files
+*.sublime-*
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+*.tmp
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+*.7z

@@ -1,0 +1,41 @@
+# Git Attributes for yt-dlp Web UI
+# Bu dosya hangi dosyaların kullanıcılar tarafından indirilmemesi gerektiğini belirler
+
+# Dokümantasyon dosyaları - sadece repoda görünür, indirilmez
+*.md linguist-documentation
+INSTALLATION-GUIDE.md linguist-documentation
+README-Windows.md linguist-documentation
+
+# Screenshot - sadece repoda görünür
+screenshot.png linguist-documentation
+
+# Ana kaynak kodları - kullanıcılar indirir
+backend/src/ linguist-language=Python
+frontend/src/ linguist-language=JavaScript
+setup.sh linguist-language=Shell
+setup-windows.bat linguist-language=Batchfile
+stop.sh linguist-language=Shell
+stop-windows.bat linguist-language=Batchfile
+idle-monitor.sh linguist-language=Shell
+
+# Konfigürasyon dosyaları - kullanıcılar indirir
+package.json linguist-language=JSON
+package-lock.json linguist-language=JSON
+requirements.txt linguist-language=Python
+pyproject.toml linguist-language=TOML
+vite.config.js linguist-language=JavaScript
+env.example linguist-language=INI
+
+# Diğer dosyalar
+*.py linguist-language=Python
+*.js linguist-language=JavaScript
+*.jsx linguist-language=JavaScript
+*.css linguist-language=CSS
+*.html linguist-language=HTML
+*.sh linguist-language=Shell
+*.bat linguist-language=Batchfile
+*.yml linguist-language=YAML
+*.yaml linguist-language=YAML
+*.json linguist-language=JSON
+*.toml linguist-language=TOML
+*.ini linguist-language=INI
